@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>El Alma del Jazz</title>
+<!-- Añadimos FontAwesome para iconos elegantes en la parte privada -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+    /* =========================================
+       ESTILOS ORIGINALES (PÁGINA DE JAZZ)
+       ========================================= */
+    body {
+        font-family: 'Georgia', serif;
+        background-color: #1e1e1e;
+        color: #f0e6d2;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+    }
+    h1 {
+        text-align: center;
+        color: #d4af37;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+    }
+    h2 {
+        color: #d4af37;
+        font-size: 1.8em;
+        margin-top: 30px;
+    }
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: #2b2b2b;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    p { font-size: 1.1em; margin: 15px 0; }
+    .figure { display: flex; align-items: center; margin: 20px 0; }
+    .figure img { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; margin-right: 20px; border: 2px solid #d4af37; }
+    .figure-text { flex: 1; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin: 10px 0; font-style: italic; }
+    a.song-link { color: #87ceeb; text-decoration: none; }
+    a.song-link:hover { color: #b0e0e6; text-decoration: underline; }
+
+    /* EL SECRETO: Camuflaje perfecto */
+    a.secret-link { 
+        color: inherit; /* Hereda el color del texto normal */
+        text-decoration: none; /* Sin subrayado */
+        cursor: text; /* El cursor no cambia, parece texto normal */
+    }
+
+    /* Comentarios Fake (Estilo Blog) */
+    .fake-comment {
+        border-bottom: 1px solid #444;
+        padding: 15px 0;
+    }
+    .fake-meta {
+        font-size: 0.8em;
+        color: #888;
+        margin-bottom: 5px;
+    }
+    .fake-user {
+        color: #d4af37;
+        font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+        h1 { font-size: 2em; }
+        h2 { font-size: 1.5em; }
+        .container { padding: 15px; }
+        p, li { font-size: 1em; }
+        .figure { flex-direction: column; text-align: center; }
+        .figure img { margin: 0 0 10px 0; width: 120px; height: 120px; }
+    }
+
+    /* =========================================
+       NUEVOS ESTILOS (SECCIÓN ROMÁNTICA)
+       Diseño minimalista, oscuro y elegante
+       ========================================= */
+    #seccion-secreta {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: #121212; /* Fondo casi negro */
+        z-index: 9999;
+        overflow-y: auto;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más moderna para el chat */
+    }
+
+    /* Contenedor Login */
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .login-box {
+        background-color: #1e1e24;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        border: 1px solid #333;
+    }
+
+    /* Inputs y Botones Elegantes */
+    .romantic-input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        background-color: #2b2b36;
+        border: 1px solid #444;
+        border-radius: 8px;
+        color: #fff;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+    .romantic-input:focus { outline: none; border-color: #b48efc; }
+
+    .romantic-btn {
+        background: linear-gradient(45deg, #b48efc, #9b59b6);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin-top: 10px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .romantic-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(180, 142, 252, 0.3);
+    }
+    .btn-secondary { background: #444; width: auto; font-size: 14px; padding: 8px 15px; }
+
+    /* App Layout */
+    .app-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        color: #e0e0e0;
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #333;
+        margin-bottom: 20px;
+    }
+
+    /* Tarjetas de contenido */
+    .card {
+        background-color: #1e1e24;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        border: 1px solid #2a2a35;
+    }
+
+    /* Música */
+    .music-grid {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .music-item {
+        background: #2b2b36;
+        padding: 10px 20px;
+        border-radius: 50px;
+        text-decoration: none;
+        color: #b48efc;
+        border: 1px solid #444;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .music-item:hover { background: #b48efc; color: #fff; border-color: #b48efc; }
+
+    /* Chat Area */
+    .chat-window {
+        background-color: #15151a;
+        height: 400px;
+        border-radius: 10px;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        border: 1px solid #333;
+        /* Fondo sutil */
+        background-image: radial-gradient(#2a2a35 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+
+    .msg {
+        max-width: 80%;
+        padding: 10px 15px;
+        border-radius: 18px;
+        font-size: 0.95em;
+        line-height: 1.4;
+        position: relative;
+        word-wrap: break-word;
+    }
+    .msg img {
+        max-width: 100%;
+        border-radius: 10px;
+        margin-top: 5px;
+        border: 1px solid #444;
+    }
+    .msg.mio {
+        align-self: flex-end;
+        background-color: #6c5ce7; /* Violeta elegante */
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    .msg.otro {
+        align-self: flex-start;
+        background-color: #2d3436; /* Gris oscuro */
+        color: #dfe6e9;
+        border-bottom-left-radius: 4px;
+    }
+    .msg-name { font-size: 0.75em; opacity: 0.7; display: block; margin-bottom: 3px; }
+
+    /* Chat Input Area */
+    .input-bar {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        align-items: center;
+    }
+    .icon-btn {
+        background: none;
+        border: none;
+        color: #888;
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 10px;
+        transition: 0.3s;
+    }
+    .icon-btn:hover { color: #b48efc; }
+    
+    #mensajeInput {
+        flex-grow: 1;
+        background-color: #2b2b36;
+        border: 1px solid #444;
+        color: white;
+        padding: 12px;
+        border-radius: 25px;
+        resize: none;
+        height: 45px; /* Altura fija para alineación */
+    }
+
+    /* Admin Panel */
+    .admin-stats {
+        font-size: 0.9em;
+        color: #aaa;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+    .stat-box {
+        background: #2b2b36;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        border: 1px solid #333;
+    }
+    .stat-num { color: #d4af37; font-weight: bold; font-size: 1.2em; display: block; }
+
+    /* Utilidades */
+    .hidden { display: none; }
+    .text-gold { color: #d4af37; }
+    .text-purple { color: #b48efc; }
+
+</style>
+</head>
+<body>
+
+<!-- ==========================================
+     PARTE 1: LA FACHADA (EL BLOG DE JAZZ)
+     ========================================== -->
+<div class="container">
+    <h1>El Alma del Jazz</h1>
+    <p>El jazz no es solo música; es una forma de vida, un reflejo del alma humana en notas improvisadas y ritmos que laten al compás del corazón. Surgió a finales del siglo XIX en las calles vibrantes de Nueva Orleans, donde las influencias del blues, el ragtime y las tradiciones africanas se fusionaron en un sonido único.</p>
+    <p>Este género ha dado lugar a momentos inolvidables. Desde el swing de los años 30 hasta el bebop de los 40 y el cool jazz de los 50. Es un arte que invita a escuchar con atención, a sentir cada nota como si contara una historia.</p>
+    
+    <h2>Figuras Icónicas del Jazz</h2>
+    <div class="figure">
+        <img alt="Frank Sinatra" src="https://i.imgur.com/DgMHCSb.jpeg"/>
+        <div class="figure-text">
+            <p><strong>Frank Sinatra</strong>, conocido como "La Voz". Su contribución al jazz vocal es innegable, especialmente en temas como "Fly Me to the Moon".</p>
+        </div>
+    </div>
+    <div class="figure">
+        <img alt="Ella Fitzgerald" src="https://i.imgur.com/101yBqK.jpeg"/>
+        <div class="figure-text">
+            <p><strong>Ella Fitzgerald</strong>, la "Primera Dama de la Canción". Canciones como "Summertime" muestran su capacidad para transformar melodías en pura magia.</p>
+        </div>
+    </div>
+    <div class="figure">
+        <img alt="Louis Armstrong" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Louis_Armstrong_restored.jpg/220px-Louis_Armstrong_restored.jpg"/>
+        <div class="figure-text">
+            <p><strong>Louis Armstrong</strong>, apodado "Satchmo". Su interpretación de "What a Wonderful World" es un himno de esperanza.</p>
+        </div>
+    </div>
+
+    <h2>Canciones que Definen el Jazz</h2>
+    <p>El jazz vive en sus melodías, y estas canciones son un testimonio de su diversidad y belleza:</p>
+    <ul>
+        <li><a class="song-link" href="https://www.youtube.com/watch?v=A3yCcXgbKrE" target="_blank">"What a Wonderful World" - Louis Armstrong</a></li>
+        <li><a class="song-link" href="https://www.youtube.com/watch?v=u2bigf337aU" target="_blank">"Summertime" - Ella Fitzgerald</a></li>
+        <li><a class="song-link" href="https://www.youtube.com/watch?v=ZEcqHA7dbwM" target="_blank">"Fly Me to the Moon" - Frank Sinatra</a></li>
+        <li><a class="song-link" href="https://www.youtube.com/watch?v=vmDDOFXSgAs&amp;pp=ygUJdGFrZSBmaXZl" target="_blank">"Take Five" - Dave Brubeck</a></li>
+        <li><a class="song-link" href="https://www.youtube.com/watch?v=ylXk1LBvIqU" target="_blank">"So What" - Miles Davis</a></li>
+    </ul>
+
+    <!-- Comentarios "Fake" antiguos -->
+    <h2>Comentarios (Archivo)</h2>
+    <div class="fake-comment">
+        <div class="fake-meta"><span class="fake-user">JazzSoul99</span> • hace 57 semanas</div>
+        <p>Increíble artículo. La versión de Louis Armstrong siempre me hace llorar. Gracias por mantener viva esta música.</p>
+    </div>
+    <div class="fake-comment">
+        <div class="fake-meta"><span class="fake-user">VinylCollector</span> • hace 46 semanas</div>
+        <p>Sinatra es insuperable. Me encantaría ver más artículos sobre el periodo Bebop.</p>
+    </div>
+    <div class="fake-comment">
+        <div class="fake-meta"><span class="fake-user">Maria_Keys</span> • hace 32 semanas</div>
+        <p>Ella Fitzgerald tenía una voz que no era de este mundo. Gran selección de canciones.</p>
+    </div>
+    
+    <h2>Un Legado Eterno</h2>
+    <p>El jazz es un género que nunca envejece. Es un recordatorio de que la música puede ser un refugio, una protesta o una celebración.</p>
+    <!-- LA TRAMPA: "melodías" activa el login, pero parece texto plano -->
+    <p>Si te apasiona este arte, sumérgete en sus raíces, descubre sus leyendas y déjate envolver por sus <a class="secret-link" href="#" id="palabra-secreta">melodías</a>.</p>
+</div>
+
+
+<!-- ==========================================
+     PARTE 2: LA SECCIÓN SECRETA (SAN VALENTÍN)
+     ========================================== -->
+<div id="seccion-secreta">
+    
+    <!-- LOGIN VIEW -->
+    <div class="login-wrapper" id="login-view">
+        <div class="login-box">
+            <h2 class="text-purple">Bienvenida</h2>
+            <p style="color:#aaa; font-size:0.9em;">Solo para Estrellita y Luna</p>
+            <input type="email" id="email" class="romantic-input" placeholder="Correo electrónico">
+            <input type="password" id="password" class="romantic-input" placeholder="Contraseña">
+            <button id="btnLogin" class="romantic-btn">Entrar</button>
+            <p id="loginError" style="color:#e74c3c; display:none; margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <!-- APP VIEW -->
+    <div class="app-container hidden" id="app-view">
+        
+        <!-- Header -->
+        <div class="header-bar">
+            <h2 style="margin:0; font-family:'Playfair Display', serif;">Hola, <span id="nombre-usuario" class="text-purple">Mi Amor</span> ✨</h2>
+            <button id="btnLogout" class="romantic-btn btn-secondary">Salir</button>
+        </div>
+
+        <!-- Admin Panel (Solo visible para Luna) -->
+        <div id="admin-panel" class="card hidden">
+            <h3 class="text-gold" style="margin-top:0;">👑 Panel de Luna</h3>
+            <p style="font-size:0.8em; margin-bottom:10px;">Estadísticas de emociones:</p>
+            <div id="stats-container" class="admin-stats">Cargando...</div>
+            <div style="margin-top:15px; border-top:1px solid #333; padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Acciones peligrosas:</span>
+                <button id="btnBorrarChat" style="background:#c72c41; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">⚠️ Borrar Chat</button>
+            </div>
+        </div>
+
+        <!-- Card: Emociones -->
+        <div class="card">
+            <h3 style="margin-top:0;">¿Cómo te sientes hoy?</h3>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <select id="emocion-select" class="romantic-input" style="flex:1; min-width:200px; margin:0;">
+                    <option value="feliz">Feliz 😊</option>
+                    <option value="triste">Triste 😔</option>
+                    <option value="estresada">Estresada 😵‍💫</option>
+                    <option value="cansada">Cansada 🥱</option>
+                    <option value="extrañandote">Extrañándote 🥺</option>
+                    <option value="pensandoEnTi">Pensando en ti 💭</option>
+                    <option value="conGanasDeVerte">Con ganas de verte 🥰</option>
+                    <option value="conGanasDePensar">Con ganas de "pensar" 😏</option>
+                </select>
+                <button id="btnMensaje" class="romantic-btn" style="width:auto; margin:0; background:#6c5ce7;">Ver Mensaje</button>
+            </div>
+            <div id="mensaje-display" style="margin-top:15px; color:#b48efc; font-style:italic; display:none;"></div>
+            <div style="text-align:right; margin-top:10px;">
+                <button id="btnPoema" style="background:none; border:none; color:#aaa; cursor:pointer; font-size:0.9em;">📜 Poema del día</button>
+            </div>
+            <div id="poema-display" style="white-space:pre-wrap; color:#d4af37; margin-top:10px; display:none; font-size:0.9em; font-style:italic;"></div>
+        </div>
+
+        <!-- Card: Música -->
+        <div class="card">
+            <h3 style="margin-top:0;">Nuestras Melodías 🎶</h3>
+            <div class="music-grid">
+                <a href="https://youtu.be/M7k5tjw3-0M" target="_blank" class="music-item"><i class="fas fa-play-circle"></i> Piano Love</a>
+                <a href="https://www.youtube.com/watch?v=ITbjjKDDSO0" target="_blank" class="music-item"><i class="fas fa-play-circle"></i> Nuestra Canción</a>
+                <a href="https://www.youtube.com/watch?v=A3yCcXgbKrE" target="_blank" class="music-item"><i class="fas fa-music"></i> Armstrong</a>
+            </div>
+        </div>
+
+        <!-- Card: Chat con Imágenes -->
+        <div class="card" style="border:1px solid #b48efc;">
+            <h3 style="margin-top:0; color:#b48efc;">Nuestro Chat Privado</h3>
+            <div id="chat-window" class="chat-window">
+                <!-- Mensajes aquí -->
+            </div>
+            <div class="input-bar">
+                <!-- Input de imagen oculto -->
+                <input type="file" id="imageInput" accept="image/*" style="display:none;">
+                <button id="btnUpload" class="icon-btn" title="Enviar Foto"><i class="fas fa-camera"></i></button>
+                
+                <textarea id="chatInput" placeholder="Escribe aquí..."></textarea>
+                
+                <button id="btnSend" class="icon-btn" style="color:#b48efc;" title="Enviar"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ==========================================
+     SCRIPTS Y LÓGICA
+     ========================================== -->
+
+<!-- Frases locales -->
+<script>
+    const FRASES = {
+        feliz: ["Tu sonrisa ilumina mi oscuridad.", "Me encanta verte brillar.", "Guarda este momento en tu corazón.", "Hoy es un día perfecto porque sonríes."],
+        triste: ["Estoy aquí, sosteniendo tu mano a la distancia.", "Esto también pasará, mi amor.", "Eres más fuerte de lo que crees.", "Llora si lo necesitas, yo recojo tus lágrimas."],
+        estresada: ["Respira. Inhala, exhala. Todo estará bien.", "Tómate un descanso, el mundo puede esperar.", "Cierra los ojos e imagina que te abrazo fuerte."],
+        cansada: ["Descansa, guerrera. Te mereces paz.", "Deja que el sueño repare tus alas.", "Buenas noches, mi vida.", "Mañana será otro día."],
+        extrañandote: ["Yo te extraño más, te lo aseguro.", "La distancia es solo física, mi alma está contigo.", "Pronto nos veremos, lo prometo."],
+        pensandoEnTi: ["Tú vives en mi mente 24/7.", "Eres mi pensamiento favorito.", "¿Coincidencia? Yo también pensaba en ti justo ahora."],
+        conGanasDeVerte: ["Cuento los segundos para verte.", "Un abrazo tuyo lo cura todo.", "Ya falta menos, amor.", "Quiero ver esos ojos brillar frente a mí."],
+        conGanasDePensar: ["Mente sucia, corazón contento 😏", "Me encanta cuando te pones así.", "Hablemos de eso... en detalle.", "Tengo las mismas ganas que tú."]
+    };
+    const POEMAS = [
+        "Entre números y letras\nsurgió una rosa en una libreta.\nEntre ecuaciones y canciones\nsurgieron nuestros amores.",
+        "Te quiero como se quiere a ciertos amores,\na la antigua, con el alma y sin mirar atrás.",
+        "Si te quiero es porque sos\nmi amor mi cómplice y todo\ny en la calle codo a codo\nsomos mucho más que dos."
+    ];
+</script>
+
+<!-- Módulo Principal -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, push, onChildAdded, get, set, onValue, serverTimestamp, remove, query, limitToLast, orderByChild } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // --- CONFIGURACIÓN FIREBASE ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyAcweOs5qS3v4xbzmkYCFLKxVaSWVsly_M",
+        authDomain: "estrellita-chl.firebaseapp.com",
+        databaseURL: "https://estrellita-chl-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "estrellita-chl",
+        storageBucket: "estrellita-chl.firebasestorage.app",
+        messagingSenderId: "1006618062076",
+        appId: "1:1006618062076:web:8cc3a6bb3ebe800d11fb79",
+        measurementId: "G-X2K8ZCR608"
+    };
+
+    let app, auth, db;
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getDatabase(app);
+    } catch (e) { console.error("Error Firebase", e); }
+
+    const USUARIO_ESTRELLITA = "oras5982";
+    const USUARIO_ADMIN = "jahaziel.alvarezreyes";
+
+    // --- REFERENCIAS DOM ---
+    const el = {
+        trigger: document.getElementById('palabra-secreta'),
+        secretSection: document.getElementById('seccion-secreta'),
+        loginView: document.getElementById('login-view'),
+        appView: document.getElementById('app-view'),
+        email: document.getElementById('email'),
+        pass: document.getElementById('password'),
+        btnLogin: document.getElementById('btnLogin'),
+        btnLogout: document.getElementById('btnLogout'),
+        chatWindow: document.getElementById('chat-window'),
+        chatInput: document.getElementById('chatInput'),
+        btnSend: document.getElementById('btnSend'),
+        btnUpload: document.getElementById('btnUpload'),
+        imageInput: document.getElementById('imageInput'),
+        adminPanel: document.getElementById('admin-panel'),
+        statsContainer: document.getElementById('stats-container'),
+        btnBorrarChat: document.getElementById('btnBorrarChat')
+    };
+
+    let currentUser = null;
+    let mensajesVistos = new Set();
+    let unsubscribeChat = null;
+    let unsubscribeStats = null;
+
+    // --- 1. APERTURA Y LOGIN ---
+    
+    // El trigger oculto
+    el.trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        el.secretSection.style.display = 'block';
+        if (!auth.currentUser) {
+            el.loginView.style.display = 'flex';
+            el.appView.classList.add('hidden');
+        }
+    });
+
+    // Login
+    el.btnLogin.addEventListener('click', () => {
+        const email = el.email.value;
+        const pass = el.pass.value;
+        const errorP = document.getElementById('loginError');
+        errorP.style.display = 'none';
+
+        signInWithEmailAndPassword(auth, email, pass)
+            .catch(err => {
+                errorP.textContent = "Error: Verifica los datos.";
+                errorP.style.display = 'block';
+            });
+    });
+
+    // Logout
+    el.btnLogout.addEventListener('click', () => {
+        signOut(auth).then(() => {
+            window.location.reload();
+        });
+    });
+
+    // Auth State Monitor
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            const shortName = user.email.split('@')[0];
+            const displayName = shortName === USUARIO_ESTRELLITA ? "Estrellita" : (shortName === USUARIO_ADMIN ? "Luna" : "Usuario");
+            
+            document.getElementById('nombre-usuario').textContent = displayName;
+            
+            el.loginView.style.display = 'none';
+            el.appView.classList.remove('hidden');
+
+            iniciarChat();
+
+            // Lógica Admin
+            if (shortName === USUARIO_ADMIN) {
+                el.adminPanel.classList.remove('hidden');
+                iniciarContadoresAdmin();
+                
+                // Borrar Chat Listener
+                el.btnBorrarChat.onclick = () => {
+                    if(confirm("¿Estás segura de borrar TODO el chat?")) {
+                        remove(ref(db, 'mensajes'));
+                    }
+                };
+            }
+        }
+    });
+
+    // --- 2. LÓGICA DEL CHAT (TEXTO E IMÁGENES) ---
+
+    function iniciarChat() {
+        const chatRef = ref(db, 'mensajes');
+        el.chatWindow.innerHTML = ''; // Limpiar
+        mensajesVistos.clear();
+
+        // Cargar últimos 50 mensajes
+        const q = query(chatRef, orderByChild('timestamp'), limitToLast(50));
+        
+        unsubscribeChat = onChildAdded(q, (snapshot) => {
+            const data = snapshot.val();
+            const key = snapshot.key;
+            if (mensajesVistos.has(key)) return;
+            mensajesVistos.add(key);
+            renderMensaje(data);
+        });
+
+        // Detectar borrado de chat
+        onValue(chatRef, (snap) => {
+            if (!snap.exists()) {
+                el.chatWindow.innerHTML = '';
+                mensajesVistos.clear();
+            }
+        });
+    }
+
+    function renderMensaje(data) {
+        const shortName = currentUser.email.split('@')[0];
+        const miNombre = shortName === USUARIO_ESTRELLITA ? "Estrellita" : (shortName === USUARIO_ADMIN ? "Luna" : "Usuario");
+        
+        const esMio = data.usuario === miNombre;
+        
+        const div = document.createElement('div');
+        div.className = `msg ${esMio ? 'mio' : 'otro'}`;
+        
+        const nombreSpan = `<span class="msg-name">${data.usuario}</span>`;
+        
+        let contenido = '';
+        if (data.tipo === 'imagen') {
+            contenido = `<img src="${data.mensaje}" alt="Foto">`;
+        } else {
+            contenido = data.mensaje.replace(/\n/g, '<br>');
+        }
+
+        div.innerHTML = `${nombreSpan}${contenido}`;
+        el.chatWindow.appendChild(div);
+        
+        // Auto scroll suave
+        requestAnimationFrame(() => {
+            el.chatWindow.scrollTop = el.chatWindow.scrollHeight;
+        });
+    }
+
+    // Enviar Texto
+    el.btnSend.addEventListener('click', enviarTexto);
+    el.chatInput.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarTexto(); }
+    });
+
+    function enviarTexto() {
+        const txt = el.chatInput.value.trim();
+        if(!txt) return;
+
+        const shortName = currentUser.email.split('@')[0];
+        const displayName = shortName === USUARIO_ESTRELLITA ? "Estrellita" : (shortName === USUARIO_ADMIN ? "Luna" : "Usuario");
+
+        push(ref(db, 'mensajes'), {
+            usuario: displayName,
+            mensaje: txt,
+            tipo: 'texto',
+            timestamp: serverTimestamp()
+        });
+        el.chatInput.value = '';
+    }
+
+    // Enviar Imagen (Compresión)
+    el.btnUpload.addEventListener('click', () => el.imageInput.click());
+
+    el.imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) { alert("La imagen es demasiado grande (Máx 5MB)"); return; }
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+                // Canvas para redimensionar
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Max ancho 500px para que sea ligero
+                const maxWidth = 500;
+                const scale = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scale;
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Comprimir a JPEG 0.7
+                const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+                const shortName = currentUser.email.split('@')[0];
+                const displayName = shortName === USUARIO_ESTRELLITA ? "Estrellita" : (shortName === USUARIO_ADMIN ? "Luna" : "Usuario");
+
+                push(ref(db, 'mensajes'), {
+                    usuario: displayName,
+                    mensaje: base64,
+                    tipo: 'imagen',
+                    timestamp: serverTimestamp()
+                });
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+        this.value = ''; // Reset input
+    });
+
+    // --- 3. FUNCIONALIDADES ROMÁNTICAS ---
+    
+    // Mensajes y Emociones
+    document.getElementById('btnMensaje').addEventListener('click', () => {
+        const emocion = document.getElementById('emocion-select').value;
+        const listaFrases = FRASES[emocion] || ["Te quiero."];
+        const frase = listaFrases[Math.floor(Math.random() * listaFrases.length)];
+        
+        const display = document.getElementById('mensaje-display');
+        display.textContent = frase;
+        display.style.display = 'block';
+
+        // Guardar emoción solo si es Estrellita
+        const shortName = currentUser.email.split('@')[0];
+        if (shortName === USUARIO_ESTRELLITA) {
+            // Incrementar contador
+            const countRef = ref(db, `contadores/${emocion}`);
+            get(countRef).then(snap => {
+                const current = snap.val() || 0;
+                set(countRef, current + 1);
+            });
+            // Guardar en historial
+            push(ref(db, 'historialEmociones'), {
+                emocion: emocion,
+                usuario: "Estrellita",
+                fecha: new Date().toLocaleString(),
+                timestamp: serverTimestamp()
+            });
+        }
+    });
+
+    // Poema
+    document.getElementById('btnPoema').addEventListener('click', () => {
+        const poema = POEMAS[Math.floor(Math.random() * POEMAS.length)];
+        const display = document.getElementById('poema-display');
+        display.textContent = poema;
+        display.style.display = 'block';
+    });
+
+    // --- 4. ADMIN PANEL (LÓGICA ARREGLADA) ---
+    function iniciarContadoresAdmin() {
+        const contadoresRef = ref(db, 'contadores');
+        unsubscribeStats = onValue(contadoresRef, (snap) => {
+            const data = snap.val();
+            el.statsContainer.innerHTML = '';
+            
+            if (!data) {
+                el.statsContainer.innerHTML = 'Sin datos aún.';
+                return;
+            }
+
+            Object.entries(data).forEach(([key, val]) => {
+                const box = document.createElement('div');
+                box.className = 'stat-box';
+                box.innerHTML = `<span class="stat-num">${val}</span> ${key}`;
+                el.statsContainer.appendChild(box);
+            });
+        });
+    }
+
+</script>
+</body>
+</html>
