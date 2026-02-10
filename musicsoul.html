@@ -399,6 +399,7 @@
 </script>
 
 <!-- LÓGICA FIREBASE Y EMAILJS -->
+<!-- SCRIPT 2: EL CEREBRO DE LA NUBE (FIREBASE) - VERSIÓN FINAL TIEMPO REAL -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -436,7 +437,6 @@
             date: new Date().toLocaleString()
         };
         emailjs.send('service_poil498', 'template_wyew1g2', params)
-            .then(() => console.log("Email enviado"))
             .catch(err => console.error("Error email", err));
     }
 
@@ -458,14 +458,65 @@
 
     let currentUser = null;
     let mensajesVistos = new Set();
+    let sesionGuardada = false; // Bandera para evitar dobles registros
 
-    // AUTH
+    // --- LÓGICA DE REGISTRO DE TIEMPO (CORREGIDA) ---
+
+    function registrarEntrada(nombreUsuario) {
+        // Si no hay un inicio guardado en la memoria temporal, lo guardamos ahora
+        if (!sessionStorage.getItem('inicioSesion')) {
+            const ahora = Date.now();
+            sessionStorage.setItem('inicioSesion', ahora);
+            sessionStorage.setItem('usuarioSesion', nombreUsuario);
+            
+            // Registrar el acceso en Firebase solo una vez al entrar
+            push(ref(db, 'accesos'), {
+                usuario: nombreUsuario,
+                fecha: new Date().toLocaleString(),
+                timestamp: serverTimestamp()
+            });
+        }
+    }
+
+    function registrarSalida() {
+        // Recuperamos el tiempo de inicio de la memoria
+        const inicio = sessionStorage.getItem('inicioSesion');
+        const usuario = sessionStorage.getItem('usuarioSesion');
+
+        if (inicio && usuario && !sesionGuardada) {
+            const fin = Date.now();
+            const duracionMs = fin - parseInt(inicio);
+            const minutos = (duracionMs / 1000 / 60).toFixed(2);
+
+            // Solo guardamos si ha estado más de 5 segundos (evita rebotes)
+            if (duracionMs > 5000) {
+                push(ref(db, 'tiempoSesiones'), {
+                    usuario: usuario,
+                    inicio: new Date(parseInt(inicio)).toLocaleString(),
+                    fin: new Date(fin).toLocaleString(),
+                    duracionMinutos: minutos + " min",
+                    timestamp: serverTimestamp()
+                });
+                console.log("Sesión finalizada y guardada:", minutos, "minutos");
+            }
+            
+            sesionGuardada = true; // Marcamos como guardada
+            sessionStorage.removeItem('inicioSesion'); // Limpiamos memoria
+        }
+    }
+
+    // Este evento se dispara SOLO cuando se cierra la pestaña o se sale de la página
+    window.addEventListener('pagehide', () => {
+        registrarSalida();
+    });
+
+    // --- AUTENTICACIÓN ---
+    
     dom.login.addEventListener('click', () => {
         const e = dom.email.value;
         const p = dom.pass.value;
         dom.error.textContent = "";
         
-        // Enviar notificación
         enviarNotificacionEmail();
 
         signInWithEmailAndPassword(auth, e, p).catch(err => {
@@ -475,7 +526,11 @@
     });
 
     dom.logout.addEventListener('click', () => {
-        signOut(auth).then(() => location.reload());
+        registrarSalida(); // Guardamos el tiempo al dar click explícitamente
+        signOut(auth).then(() => {
+            sessionStorage.clear(); // Limpieza total
+            location.reload();
+        });
     });
 
     onAuthStateChanged(auth, (user) => {
@@ -485,6 +540,10 @@
             const name = short === USUARIO_ESTRELLITA ? "Estrellita" : (short === USUARIO_ADMIN ? "Luna" : "Usuario");
             document.getElementById('nombre-usuario').textContent = name;
             
+            // Iniciamos el contador (o recuperamos el existente si recargó)
+            sesionGuardada = false; 
+            registrarEntrada(name);
+
             dom.loginBox.style.display = 'none';
             dom.appBox.classList.remove('hidden');
             
@@ -502,7 +561,7 @@
                 };
             }
             
-            // Listener Emociones
+            // Listener Emociones (Solo guarda, no afecta al tiempo)
             document.addEventListener('emocionRegistrada', (e) => {
                 if(short === USUARIO_ESTRELLITA) {
                     const emo = e.detail;
@@ -520,7 +579,7 @@
         }
     });
 
-    // CHAT LÓGICA
+    // --- CHAT LÓGICA ---
     function iniciarChat() {
         const chatRef = ref(db, 'mensajes');
         dom.chat.innerHTML = '';
@@ -538,6 +597,7 @@
     }
 
     function renderMsg(data) {
+        if(!currentUser) return;
         const short = currentUser.email.split('@')[0];
         const miNombre = short === USUARIO_ESTRELLITA ? "Estrellita" : (short === USUARIO_ADMIN ? "Luna" : "Usuario");
         const esMio = data.usuario === miNombre;
@@ -555,7 +615,7 @@
         requestAnimationFrame(() => dom.chat.scrollTop = dom.chat.scrollHeight);
     }
 
-    // ENVIAR
+    // --- ENVIAR ---
     dom.send.addEventListener('click', enviarTexto);
     dom.input.addEventListener('keypress', (e) => { if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); enviarTexto(); } });
 
@@ -603,6 +663,7 @@
         });
     }
 
+    // --- ADMIN ---
     function iniciarContadores() {
         onValue(ref(db, 'contadores'), (snap) => {
             const d = snap.val();
