@@ -784,9 +784,30 @@
             renderMsg(snap.val(), snap.key);
         });
 
+        // Solo actualizamos el badge de reacción, sin destruir el elemento ni sus listeners
         onChildChanged(q, (snap) => {
-            const el = document.getElementById(`msg-${snap.key}`);
-            if (el) el.outerHTML = createMessageHTML(snap.val(), snap.key);
+            const data = snap.val();
+            const key = snap.key;
+            const row = document.getElementById(`msg-${key}`);
+            if (!row) return;
+
+            // Actualizar badge de reacción
+            let badge = row.querySelector('.reaction-badge');
+            if (data.reaction) {
+                if (badge) {
+                    badge.textContent = data.reaction;
+                } else {
+                    const bubble = row.querySelector('.bubble');
+                    if (bubble) {
+                        badge = document.createElement('div');
+                        badge.className = 'reaction-badge';
+                        badge.textContent = data.reaction;
+                        bubble.appendChild(badge);
+                    }
+                }
+            } else {
+                if (badge) badge.remove();
+            }
         });
 
         onValue(chatRef, (snap) => {
