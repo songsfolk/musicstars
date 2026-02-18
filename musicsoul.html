@@ -235,14 +235,14 @@
         background: #1a1a1a; border: 1px solid #444; padding: 6px 10px;
         border-radius: 50px; gap: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.7);
         z-index: 200; animation: popUp 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        white-space: nowrap;
+        white-space: nowrap; pointer-events: all;
     }
     .msg-row.me .reaction-menu { right: 0; }
     .msg-row.other .reaction-menu { left: 0; }
     .reaction-menu.active { display: flex; }
     @keyframes popUp { from { transform: scale(0.5) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-    .emoji-opt { font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-block; }
-    .emoji-opt:hover { transform: scale(1.5); }
+    .emoji-opt { font-size: 1.3rem; cursor: pointer; transition: transform 0.2s; display: inline-block; pointer-events: all !important; }
+    .emoji-opt:hover, .emoji-opt:active { transform: scale(1.5); }
 
     /* Botón Responder */
     .reply-action-btn {
@@ -834,42 +834,45 @@
         let pressTimer = null;
         let startX = 0;
         let startY = 0;
-        let isSwiping = false;
+        let moved = false;
         let swipeActivated = false;
+        let longPressTriggered = false;
 
-        // Long press → menú de emojis
+        // ---- LONG PRESS (passive:false para poder hacer preventDefault) ----
         bubble.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
-            isSwiping = false;
+            moved = false;
             swipeActivated = false;
+            longPressTriggered = false;
 
             pressTimer = setTimeout(() => {
-                if (!isSwiping) {
-                    e.preventDefault();
-                    showMobileEmojiMenu(row, key, bubble);
+                if (!moved) {
+                    longPressTriggered = true;
+                    e.preventDefault(); // Evita selección de texto del navegador
+                    if (navigator.vibrate) navigator.vibrate(60);
+                    showMobileEmojiMenu(key);
                 }
-            }, 600);
-        }, { passive: true });
+            }, 550);
+        }, { passive: false }); // CLAVE: passive:false permite preventDefault
 
         bubble.addEventListener('touchmove', (e) => {
             const dx = e.touches[0].clientX - startX;
             const dy = e.touches[0].clientY - startY;
+            const totalMove = Math.sqrt(dx * dx + dy * dy);
 
-            // Si el movimiento horizontal es mayor que vertical → es swipe
-            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
-                isSwiping = true;
+            // Si se mueve más de 10px en cualquier dirección, cancelar long press
+            if (totalMove > 10) {
+                moved = true;
                 clearTimeout(pressTimer);
+            }
 
-                // Solo permitir swipe a la derecha para "otros" mensajes y a la izquierda para los propios
-                // Simplificamos: swipe en cualquier dirección activa responder
-                const clampedDx = Math.max(0, Math.min(dx, 70));
-                if (Math.abs(dx) > 5) {
-                    wrapper.style.transform = `translateX(${clampedDx * 0.6}px)`;
-                    if (indicator) indicator.style.opacity = Math.min(clampedDx / 50, 1);
-                }
-
-                if (clampedDx > 50 && !swipeActivated) {
+            // Lógica de swipe horizontal
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+                const clampedDx = Math.max(0, Math.min(dx, 75));
+                wrapper.style.transform = `translateX(${clampedDx * 0.55}px)`;
+                if (indicator) indicator.style.opacity = Math.min(clampedDx / 55, 1);
+                if (clampedDx > 55 && !swipeActivated) {
                     swipeActivated = true;
                 }
             }
@@ -877,40 +880,48 @@
 
         bubble.addEventListener('touchend', (e) => {
             clearTimeout(pressTimer);
+
+            // Restaurar posición con transición suave
+            wrapper.style.transition = 'transform 0.25s ease';
             wrapper.style.transform = '';
             if (indicator) indicator.style.opacity = 0;
+            setTimeout(() => { wrapper.style.transition = ''; }, 260);
 
-            if (swipeActivated) {
+            if (swipeActivated && !longPressTriggered) {
                 const safeText = data.tipo === 'texto'
                     ? data.mensaje.replace(/"/g, '&quot;').replace(/'/g, "\\'").replace(/\n/g, ' ')
                     : '📎 Archivo';
                 window._chatAct('reply', key, data.usuario, safeText);
             }
         }, { passive: true });
+
+        // Cancelar si el dedo se levanta rápido
+        bubble.addEventListener('touchcancel', () => {
+            clearTimeout(pressTimer);
+            wrapper.style.transform = '';
+            if (indicator) indicator.style.opacity = 0;
+        }, { passive: true });
     }
 
-    function showMobileEmojiMenu(row, key, bubble) {
-        // Cerrar cualquier menú abierto
+    function showMobileEmojiMenu(key) {
+        // Cerrar cualquier menú previo
         document.querySelectorAll('.reaction-menu.active').forEach(el => el.classList.remove('active'));
-        const cm = document.getElementById('custom-context-menu');
-        if(cm) { cm.classList.remove('active'); cm.style.display='none'; }
 
         const menu = document.getElementById(`menu-${key}`);
         if (!menu) return;
 
-        // Vibración táctil si disponible
-        if (navigator.vibrate) navigator.vibrate(50);
-
         menu.classList.add('active');
 
+        // Cerrar al tocar fuera (con un pequeño delay para no capturar el mismo touchend)
         setTimeout(() => {
-            document.addEventListener('touchstart', function closeMenu(e) {
-                if (!menu.contains(e.target)) {
+            const closeMenu = (ev) => {
+                if (!menu.contains(ev.target)) {
                     menu.classList.remove('active');
                     document.removeEventListener('touchstart', closeMenu);
                 }
-            });
-        }, 100);
+            };
+            document.addEventListener('touchstart', closeMenu, { passive: true });
+        }, 200);
     }
 
     // ---- REPLY BAR ----
